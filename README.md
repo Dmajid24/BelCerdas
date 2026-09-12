@@ -10,6 +10,7 @@ Aplikasi bel cerdas cermat bertema Sumpah Pemuda yang dapat dipakai lewat HP dan
 - Tampilan responsif untuk HP dan komputer.
 - Bunyi serta getaran saat tombol ditekan (jika didukung perangkat).
 - Room terhapus otomatis setelah 24 jam.
+- Pemeriksaan status dihemat agar cocok untuk kuota gratis Upstash.
 - Tidak memakai MySQL, PostgreSQL, atau migrasi database.
 
 ## Menjalankan di komputer

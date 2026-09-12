@@ -18,6 +18,7 @@ type StoredRoom = {
   hostToken: string;
   openedAt: string | number;
   createdAt: string | number;
+  teamCount: string | number;
 };
 
 type Winner = { teamId: string; teamName: string; winnerAt: number };
@@ -29,7 +30,6 @@ const roomKey = (code: string) => `belcerdas:room:${code}`;
 const roomClaimKey = (code: string) => `belcerdas:claim:${code}`;
 const teamNameKey = (code: string, name: string) => `belcerdas:room:${code}:name:${encodeURIComponent(name)}`;
 const teamIdKey = (code: string, id: string) => `belcerdas:room:${code}:team:${id}`;
-const teamCountKey = (code: string) => `belcerdas:room:${code}:team-count`;
 const winnerKey = (code: string, round: number) => `belcerdas:room:${code}:round:${round}:winner`;
 
 export function cleanCode(value: string) {
@@ -61,6 +61,7 @@ export async function createRoom() {
       hostToken,
       openedAt: 0,
       createdAt: now,
+      teamCount: 0,
     });
     await redis.expire(roomKey(code), ROOM_TTL_SECONDS);
     return { code, hostToken };
@@ -80,10 +81,7 @@ export async function readRoom(code: string): Promise<PublicRoom | null> {
   if (!room) return null;
 
   const round = Number(room.round);
-  const [winner, teamCount] = await Promise.all([
-    redis.get<Winner>(winnerKey(code, round)),
-    redis.get<number>(teamCountKey(code)),
-  ]);
+  const winner = await redis.get<Winner>(winnerKey(code, round));
   const openedAt = Number(room.openedAt || 0);
 
   return {
@@ -93,7 +91,7 @@ export async function readRoom(code: string): Promise<PublicRoom | null> {
     winnerTeamId: winner?.teamId ?? null,
     winnerTeam: winner?.teamName ?? null,
     responseTime: winner && openedAt ? Math.max(0, winner.winnerAt - openedAt) : null,
-    teamCount: Number(teamCount ?? 0),
+    teamCount: Number(room.teamCount ?? 0),
   };
 }
 
@@ -114,9 +112,9 @@ export async function joinRoom(code: string, requestedName: string) {
 
   await Promise.all([
     redis.set(teamIdKey(code, teamId), teamName, { ex: ROOM_TTL_SECONDS }),
-    redis.incr(teamCountKey(code)),
+    redis.hincrby(roomKey(code), "teamCount", 1),
   ]);
-  await redis.expire(teamCountKey(code), ROOM_TTL_SECONDS);
+  await redis.expire(roomKey(code), ROOM_TTL_SECONDS);
 
   return { code, teamId, teamName };
 }

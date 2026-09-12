@@ -63,7 +63,7 @@ function useRoom(code?: string) {
   useEffect(() => {
     if (!code) return;
     void refresh();
-    const timer = window.setInterval(refresh, 650);
+    const timer = window.setInterval(refresh, 1500);
     return () => window.clearInterval(timer);
   }, [code, refresh]);
   return { room, setRoom, connected };
