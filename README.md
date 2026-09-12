@@ -1,6 +1,6 @@
-# BelCerdas
+# Arena Sumpah Pemuda
 
-Aplikasi bel cerdas cermat yang dapat dipakai lewat HP dan jaringan berbeda. Peserta masuk sebagai tamu memakai kode room dan nama tim. Panitia dapat membuka bel, melihat tim tercepat, lalu memulai ronde berikutnya.
+Aplikasi bel cerdas cermat bertema Sumpah Pemuda yang dapat dipakai lewat HP dan jaringan berbeda. Peserta masuk sebagai tamu memakai kode gelanggang dan nama regu. Panitia dapat membuka bel, melihat regu tercepat, lalu memulai babak berikutnya.
 
 ## Fitur
 

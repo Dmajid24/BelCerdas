@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, type ButtonHTMLAttributes, type InputHTMLAttributes, useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Check, Copy, Crown, Radio, RefreshCw, Share2, Sparkles, Users, Wifi, WifiOff, Zap } from "lucide-react";
+import { ArrowLeft, Check, Copy, Crown, Flag, Radio, RefreshCw, Share2, Sparkles, Trophy, Users, Wifi, WifiOff, Zap } from "lucide-react";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "ghost" | "outline" };
 
@@ -32,9 +32,9 @@ type WebMcpDocument = Document & {
 };
 
 const statusCopy: Record<RoomStatus, { label: string; detail: string }> = {
-  waiting: { label: "Menunggu panitia", detail: "Bel belum dibuka" },
-  open: { label: "Bel aktif", detail: "Tekan secepat mungkin!" },
-  locked: { label: "Bel terkunci", detail: "Pemenang sudah ditemukan" },
+  waiting: { label: "Menunggu aba-aba", detail: "Bel belum dibuka panitia" },
+  open: { label: "Bel dibuka!", detail: "Tekan untuk membela regumu" },
+  locked: { label: "Babak selesai", detail: "Regu tercepat telah ditemukan" },
 };
 
 async function jsonRequest<T>(url: string, options?: RequestInit): Promise<T> {
@@ -152,9 +152,9 @@ export default function Home() {
       <div className="ambient ambient-one" /><div className="ambient ambient-two" />
       <header className="topbar">
         <button className="brand" onClick={goHome} aria-label="Kembali ke halaman awal">
-          <span className="brand-mark"><Zap size={20} fill="currentColor" /></span><span>BELCERDAS</span>
+          <span className="brand-mark"><Flag size={20} fill="currentColor" /></span><span><b>SUMPAH</b> PEMUDA</span>
         </button>
-        <div className="live-pill"><span /> LIVE ARENA</div>
+        <div className="live-pill"><span /> ARENA 28</div>
       </header>
       {role === "home" && <RolePicker onChoose={setRole} />}
       {role === "team" && <TeamView session={teamSession} onSession={updateTeamSession} onBack={goHome} />}
@@ -166,22 +166,26 @@ export default function Home() {
 function RolePicker({ onChoose }: { onChoose: (role: Role) => void }) {
   return (
     <section className="home-screen">
-      <div className="eyebrow"><Sparkles size={16} /> Siap adu cepat?</div>
-      <h1>Siapa paling cepat,<br /><em>dia yang menjawab.</em></h1>
-      <p className="lead">Masuk tanpa akun. Buat room sebagai panitia atau gabung memakai nama tim.</p>
+      <div className="date-stamp">28 • OKTOBER</div>
+      <div className="eyebrow"><Sparkles size={16} /> Lomba Cerdas Cermat Sumpah Pemuda</div>
+      <h1>Adu cepat.<br /><em>Adu cerdas.</em><br /><span>Untuk Indonesia.</span></h1>
+      <p className="lead">Satu arena untuk para pemuda yang berani berpikir cepat. Masuk tanpa akun, satukan regu, dan rebut kehormatan sebagai yang tercepat.</p>
       <div className="role-grid">
         <button className="role-card host-card" onClick={() => onChoose("host")}>
-          <span className="role-icon"><Radio /></span><span className="role-kicker">KENDALIKAN LOMBA</span>
-          <strong>Saya Panitia</strong><small>Buat room, buka bel, dan lihat pemenang.</small>
-          <span className="role-action">Buat room <span>→</span></span>
+          <span className="card-number">01</span><span className="role-icon"><Radio /></span><span className="role-kicker">POS KOMANDO</span>
+          <strong>Saya Panitia</strong><small>Buat gelanggang, buka bel, dan tentukan jalannya setiap babak.</small>
+          <span className="role-action">Buka panel <span>→</span></span>
         </button>
         <button className="role-card team-card" onClick={() => onChoose("team")}>
-          <span className="role-icon"><Users /></span><span className="role-kicker">MASUK SEBAGAI TAMU</span>
-          <strong>Saya Peserta</strong><small>Masukkan kode room dan nama tim.</small>
-          <span className="role-action">Gabung lomba <span>→</span></span>
+          <span className="card-number">02</span><span className="role-icon"><Users /></span><span className="role-kicker">BARISAN PEMUDA</span>
+          <strong>Saya Peserta</strong><small>Masukkan kode gelanggang dan nama regumu untuk bertanding.</small>
+          <span className="role-action">Masuk arena <span>→</span></span>
         </button>
       </div>
-      <div className="trust-row"><Wifi size={17} /> Bisa digunakan dari HP dan jaringan yang berbeda</div>
+      <div className="pledge-strip" aria-label="Semangat Sumpah Pemuda">
+        <span><b>01</b> Satu Tanah Air</span><span><b>02</b> Satu Bangsa</span><span><b>03</b> Satu Bahasa</span>
+      </div>
+      <div className="trust-row"><Wifi size={17} /> Terhubung lintas HP dan jaringan • Satu arena, satu pemenang</div>
     </section>
   );
 }
@@ -226,16 +230,16 @@ function TeamView({ session, onSession, onBack }: { session: TeamSession | null;
     <section className="form-screen">
       <BackButton onClick={onBack} />
       <div className="form-card">
-        <span className="mini-icon"><Users /></span><p className="section-kicker">MASUK SEBAGAI PESERTA</p>
-        <h2>Gabung ke arena</h2><p>Gunakan kode yang tampil di layar panitia.</p>
+        <span className="mini-icon"><Users /></span><p className="section-kicker">BARISAN PESERTA</p>
+        <h2>Masuk gelanggang</h2><p>Masukkan kode dari panitia dan kibarkan nama regumu.</p>
         <form onSubmit={join} className="join-form">
-          <label htmlFor="room-code">Kode room</label>
+          <label htmlFor="room-code">Kode gelanggang</label>
           <Input id="room-code" value={code} onChange={(event) => setCode(event.target.value.toUpperCase().slice(0, 6))} placeholder="Contoh: A7K9P2" autoCapitalize="characters" required />
-          <label htmlFor="team-name">Nama tim</label>
-          <Input id="team-name" value={teamName} onChange={(event) => setTeamName(event.target.value)} placeholder="Contoh: Tim Garuda" maxLength={32} required />
+          <label htmlFor="team-name">Nama regu</label>
+          <Input id="team-name" value={teamName} onChange={(event) => setTeamName(event.target.value)} placeholder="Contoh: Pemuda Nusantara" maxLength={32} required />
           {error && <p className="error-box">{error}</p>}
           <Button className="primary-button" type="submit" disabled={loading}>
-            {loading ? <RefreshCw className="spin" /> : <Zap />}{loading ? "Menghubungkan..." : "Masuk ke room"}
+            {loading ? <RefreshCw className="spin" /> : <Flag />}{loading ? "Menghubungkan..." : "Masuk arena"}
           </Button>
         </form>
       </div>
@@ -245,11 +249,11 @@ function TeamView({ session, onSession, onBack }: { session: TeamSession | null;
   return (
     <section className={`buzzer-screen ${isWinner ? "winner-screen" : ""}`}>
       <div className="participant-bar">
-        <div><span className="tiny-label">TIM ANDA</span><strong>{session.teamName}</strong></div>
-        <div className="room-chip">ROOM <b>{session.code}</b></div>
+        <div><span className="tiny-label">REGU ANDA</span><strong>{session.teamName}</strong></div>
+        <div className="room-chip">KODE <b>{session.code}</b></div>
       </div>
       <div className="round-line">
-        <span>RONDE {room?.round ?? 1}</span>
+        <span>BABAK {room?.round ?? 1}</span>
         <span className={connected ? "connection good" : "connection bad"}>
           {connected ? <Wifi size={15} /> : <WifiOff size={15} />}{connected ? "Terhubung" : "Menghubungkan..."}
         </span>
@@ -260,7 +264,7 @@ function TeamView({ session, onSession, onBack }: { session: TeamSession | null;
         </div>
         {room?.status === "locked" ? (
           <div className={`winner-result ${isWinner ? "mine" : "other"}`}>
-            <div className="crown-wrap"><Crown size={42} /></div><p>{isWinner ? "KAMU YANG TERCEPAT!" : "BEL DIMENANGKAN OLEH"}</p>
+            <div className="crown-wrap"><Trophy size={42} /></div><p>{isWinner ? "REGUMU YANG TERCEPAT!" : "BABAK DIMENANGKAN OLEH"}</p>
             <h2>{room.winnerTeam}</h2><span>{formatMs(room.responseTime)}</span>
           </div>
         ) : (
@@ -273,7 +277,7 @@ function TeamView({ session, onSession, onBack }: { session: TeamSession | null;
         )}
         {error && <p className="error-box compact">{error}</p>}
       </div>
-      <button className="leave-link" onClick={() => onSession(null)}>Keluar dari room</button>
+      <button className="leave-link" onClick={() => onSession(null)}>Keluar dari gelanggang</button>
     </section>
   );
 }
@@ -311,11 +315,11 @@ function HostView({ session, onSession, onBack }: { session: HostSession | null;
     <section className="form-screen">
       <BackButton onClick={onBack} />
       <div className="form-card host-start">
-        <span className="mini-icon"><Radio /></span><p className="section-kicker">PANEL PANITIA</p>
-        <h2>Buat arena baru</h2><p>Kode room dibuat otomatis dan bisa langsung dibagikan ke peserta.</p>
+        <span className="mini-icon"><Flag /></span><p className="section-kicker">POS KOMANDO PANITIA</p>
+        <h2>Siapkan gelanggang</h2><p>Buat kode pertandingan dan bagikan kepada seluruh regu peserta.</p>
         {error && <p className="error-box">{error}</p>}
         <Button className="primary-button" onClick={createRoom} disabled={loading}>
-          {loading ? <RefreshCw className="spin" /> : <Zap />}{loading ? "Membuat room..." : "Buat room sekarang"}
+          {loading ? <RefreshCw className="spin" /> : <Flag />}{loading ? "Menyiapkan arena..." : "Mulai lomba"}
         </Button>
       </div>
     </section>
@@ -328,31 +332,31 @@ function HostView({ session, onSession, onBack }: { session: HostSession | null;
       </div>
       <div className="host-grid">
         <article className="room-board">
-          <p className="section-kicker">KODE ROOM</p><div className="room-code-display">{session.code}</div>
-          <p className="share-hint">Peserta dapat membuka link atau mengetik kode ini.</p>
+          <p className="section-kicker">KODE GELANGGANG</p><div className="room-code-display">{session.code}</div>
+          <p className="share-hint">Bagikan tautan atau tampilkan kode ini kepada seluruh regu.</p>
           <div className="share-buttons">
             <Button variant="outline" onClick={copyLink}>{copied ? <Check /> : <Copy />} {copied ? "Tersalin" : "Salin link"}</Button>
             <Button variant="outline" onClick={share}><Share2 /> Bagikan</Button>
           </div>
-          <div className="team-count"><Users size={19} /><b>{room?.teamCount ?? 0}</b> tim telah bergabung</div>
+          <div className="team-count"><Users size={19} /><b>{room?.teamCount ?? 0}</b> regu siap bertanding</div>
         </article>
         <article className="control-board">
           <div className="control-top">
-            <div><span className="tiny-label">RONDE</span><b>{room?.round ?? 1}</b></div>
+            <div><span className="tiny-label">BABAK</span><b>{room?.round ?? 1}</b></div>
             <div className={`host-status status-${room?.status ?? "waiting"}`}><span /> {statusCopy[room?.status ?? "waiting"].label}</div>
           </div>
           {room?.status === "locked" ? (
-            <div className="host-winner"><Crown /><p>TIM TERCEPAT</p><h2>{room.winnerTeam}</h2><span>{formatMs(room.responseTime)}</span></div>
+            <div className="host-winner"><Trophy /><p>REGU TERCEPAT</p><h2>{room.winnerTeam}</h2><span>{formatMs(room.responseTime)}</span></div>
           ) : (
             <div className="host-waiting"><div className="radar"><span /><Radio size={34} /></div>
-              <h3>{room?.status === "open" ? "Menunggu bel ditekan" : "Bel masih ditutup"}</h3>
-              <p>{room?.status === "open" ? "Sistem akan mengunci tim pertama secara otomatis." : "Buka bel ketika soal selesai dibacakan."}</p>
+              <h3>{room?.status === "open" ? "Menanti regu tercepat" : "Menunggu aba-aba"}</h3>
+              <p>{room?.status === "open" ? "Sistem akan mengunci regu pertama secara otomatis." : "Buka bel setelah soal selesai dibacakan."}</p>
             </div>
           )}
           <div className="control-actions">
-            {room?.status === "waiting" && <Button className="open-button" onClick={() => control("open")} disabled={loading}><Zap /> Buka bel</Button>}
+            {room?.status === "waiting" && <Button className="open-button" onClick={() => control("open")} disabled={loading}><Flag /> Mulai babak</Button>}
             {room?.status === "open" && <Button className="close-button" onClick={() => control("close")} disabled={loading}>Tutup bel</Button>}
-            {room?.status === "locked" && <Button className="next-button" onClick={() => control("next")} disabled={loading}><RefreshCw /> Ronde berikutnya</Button>}
+            {room?.status === "locked" && <Button className="next-button" onClick={() => control("next")} disabled={loading}><RefreshCw /> Babak berikutnya</Button>}
           </div>
           {error && <p className="error-box compact">{error}</p>}
         </article>

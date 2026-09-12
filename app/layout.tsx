@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "BelCerdas — Bel Cerdas Cermat Online",
-  description: "Bel cerdas cermat real-time untuk panitia dan peserta di berbagai perangkat.",
+  title: "Arena Sumpah Pemuda — Cerdas Cermat Online",
+  description: "Arena bel cerdas cermat Sumpah Pemuda untuk panitia dan peserta di berbagai perangkat.",
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
 };
 
